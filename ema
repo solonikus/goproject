@@ -1,0 +1,81 @@
+package main
+
+import (
+        "fmt"
+        "strconv"
+        "time"
+)
+
+type Candle struct {
+        Open  float64
+        Close float64
+        High  float64
+        Low   float64
+        Value float64
+        Volume int
+        Begin string
+        End   string
+}
+
+// parseTime parses the time string from the Begin field of the Candle struct.
+func (c *Candle) parseTime() (time.Time, error) {
+        layout := "2006-01-02T15:04:05Z" // Adjust the layout if your time format is different
+        t, err := time.Parse(layout, c.Begin)
+        if err != nil {
+                return time.Time{}, fmt.Errorf("parsing time: %w", err)
+        }
+        return t, nil
+}
+
+// calculateEMA рассчитывает экспоненциальную скользящую среднюю (EMA).
+func calculateEMA(candles []Candle, period int) ([]float64, error) {
+        if len(candles) < period {
+                return nil, fmt.Errorf("недостаточно данных для расчета EMA (необходимо %d, получено %d)", period, len(candles))
+        }
+
+        emaValues := make([]float64, len(candles))
+        k := 2.0 / float64(period+1)
+
+        // Рассчитываем первое значение EMA как SMA
+        sum := 0.0
+        for i := 0; i < period; i++ {
+                sum += candles[i].Close
+        }
+        emaValues[period-1] = sum / float64(period)
+
+        // Рассчитываем последующие значения EMA
+        for i := period; i < len(candles); i++ {
+                emaValues[i] = (candles[i].Close*k) + (emaValues[i-1]*(1-k))
+        }
+
+        return emaValues, nil
+}
+
+func main() {
+        candles := []Candle{
+                {Open: 10, Close: 12, High: 15, Low: 9, Value: 12, Volume: 100, Begin: "2024-10-27T10:00:00Z", End: "2024-10-27T10:05:00Z"},
+                {Open: 12, Close: 15, High: 16, Low: 11, Value: 15, Volume: 150, Begin: "2024-10-27T10:05:00Z", End: "2024-10-27T10:10:00Z"},
+                {Open: 15, Close: 14, High: 17, Low: 13, Value: 14, Volume: 200, Begin: "2024-10-27T10:10:00Z", End: "2024-10-27T10:15:00Z"},
+                {Open: 14, Close: 16, High: 18, Low: 12, Value: 16, Volume: 250, Begin: "2024-10-27T10:15:00Z", End: "2024-10-27T10:20:00Z"},
+                {Open: 16, Close: 18, High: 20, Low: 15, Value: 18, Volume: 300, Begin: "2024-10-27T10:20:00Z", End: "2024-10-27T10:25:00Z"},
+        }
+
+        period := 3
+        emaValues, err := calculateEMA(candles, period)
+        if err != nil {
+                fmt.Println("Ошибка расчета EMA:", err)
+                return
+        }
+
+        fmt.Println("Значения EMA:", emaValues)
+
+        // Пример использования parseTime
+        for _, candle := range candles {
+                t, err := candle.parseTime()
+                if err != nil {
+                        fmt.Println("Ошибка парсинга времени:", err)
+                        return
+                }
+                fmt.Println("Время свечи:", t)
+        }
+}
