@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/go-echarts/go-echarts/v2/components"
 )
 
 // Основная функция
@@ -22,7 +20,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	kline := DrawCandlestickChart(candle_data, symbol, "candle.html")
 	line := DrawEMALine(candle_data, kline, 9)
-	page := components.NewPage()
+	// page := components.NewPage()
 	kline.Overlap(line)
 	err = kline.Render(w)
 	if err != nil {
