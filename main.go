@@ -19,9 +19,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	kline := DrawCandlestickChart(candle_data, symbol, "candle.html")
-	line := DrawEMALine(candle_data, kline, 9)
+	line9 := DrawEMALine(candle_data, kline, 9, "blue")
+	line20 := DrawEMALine(candle_data, kline, 20, "red")
+	line50 := DrawEMALine(candle_data, kline, 50, "green")
+	line100 := DrawEMALine(candle_data, kline, 100, "orange")
+
 	// page := components.NewPage()
-	kline.Overlap(line)
+	kline.Overlap(line9)
+	kline.Overlap(line20)
+	kline.Overlap(line50)
+	kline.Overlap(line100)
+
 	err = kline.Render(w)
 	if err != nil {
 		panic(err)

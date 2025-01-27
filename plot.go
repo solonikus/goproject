@@ -65,7 +65,7 @@ func DrawCandlestickChart(candles []Candle, ticker string, filename string) *cha
 	return kline
 }
 
-func DrawEMALine(candle_data []Candle, kline *charts.Kline, period int) *charts.Line {
+func DrawEMALine(candle_data []Candle, kline *charts.Kline, period int, color string) *charts.Line {
 	line := charts.NewLine()
 	ema9, err := IndicatorEMA(candle_data, period)
 	if err != nil {
@@ -83,6 +83,10 @@ func DrawEMALine(candle_data []Candle, kline *charts.Kline, period int) *charts.
 		SetSeriesOptions(charts.WithLineChartOpts(opts.LineChart{
 			Smooth:     opts.Bool(true), // Убираем точки
 			ShowSymbol: opts.Bool(false),
-		}))
+		}),
+			charts.WithItemStyleOpts(opts.ItemStyle{
+				Color: color,
+			}))
+
 	return line
 }
