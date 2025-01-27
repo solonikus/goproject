@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/go-echarts/go-echarts/v2/components"
 )
 
 // Основная функция
@@ -18,11 +20,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+	candle_data60, err := GetCandlesData(startDate, endDate, symbol, "60")
+	if err != nil {
+		return
+	}
+
 	kline := DrawCandlestickChart(candle_data, symbol, "candle.html")
+
+	kline60 := DrawCandlestickChart(candle_data60, symbol, "candle.html")
+
 	line9, err := DrawEMALine(candle_data, kline, 9, "blue")
 	if err != nil {
 		return
 	}
+
+	line9_60, err := DrawEMALine(candle_data60, kline60, 9, "blue")
+	if err != nil {
+		return
+	}
+
 	line20, err := DrawEMALine(candle_data, kline, 20, "red")
 	if err != nil {
 		return
@@ -35,13 +51,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	// page := components.NewPage()
+
+	page := components.NewPage()
+	page.AddCharts(kline, kline60)
+
+	kline60.Overlap(line9_60)
+
 	kline.Overlap(line9)
 	kline.Overlap(line20)
 	kline.Overlap(line50)
 	kline.Overlap(line100)
 
-	err = kline.Render(w)
+	err = page.Render(w)
 	if err != nil {
 		panic(err)
 	}
