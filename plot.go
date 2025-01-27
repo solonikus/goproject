@@ -68,7 +68,7 @@ func DrawCandlestickChart(candles []Candle, ticker string, filename string) *cha
 }
 
 func DrawEMALine(candleData []Candle, kline *charts.Kline, period int) (*charts.Line, error) {
-	if candleData == nil || len(candleData) == 0 {
+	if len(candleData) == 0 {
 		return nil, fmt.Errorf("candleData is empty")
 	}
 	if period <= 0 {
