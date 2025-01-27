@@ -67,18 +67,15 @@ func DrawCandlestickChart(candles []Candle, ticker string, filename string) *cha
 	return kline
 }
 
-func DrawEMALine(candle_data []Candle, kline *charts.Kline, period int, color string) *charts.Line {
-	line := charts.NewLine()
-	ema9, err := IndicatorEMA(candle_data, period)
-func DrawEMALine(candleData []Candle, kline *charts.Kline, period int) (*charts.Line, error) {
-	if len(candleData) == 0 {
+func DrawEMALine(candle_data []Candle, kline *charts.Kline, period int, color string) (*charts.Line, error) {
+	if len(candle_data) == 0 {
 		return nil, fmt.Errorf("candleData is empty")
 	}
 	if period <= 0 {
 		return nil, fmt.Errorf("period must be positive")
 	}
 
-	emaValues, err := IndicatorEMA(candleData, period)
+	emaValues, err := IndicatorEMA(candle_data, period)
 	if err != nil {
 		return nil, fmt.Errorf("IndicatorEMA failed: %w", err)
 	}
@@ -92,9 +89,6 @@ func DrawEMALine(candleData []Candle, kline *charts.Kline, period int) (*charts.
 			charts.WithItemStyleOpts(opts.ItemStyle{
 				Color: color,
 			}))
-
-	return line
-		}))
 
 	return line, nil
 }

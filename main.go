@@ -19,12 +19,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	kline := DrawCandlestickChart(candle_data, symbol, "candle.html")
-	line9 := DrawEMALine(candle_data, kline, 9, "blue")
-	line20 := DrawEMALine(candle_data, kline, 20, "red")
-	line50 := DrawEMALine(candle_data, kline, 50, "green")
-	line100 := DrawEMALine(candle_data, kline, 100, "orange")
-
-	line, err := DrawEMALine(candle_data, kline, 9)
+	line9, err := DrawEMALine(candle_data, kline, 9, "blue")
+	if err != nil {
+		return
+	}
+	line20, err := DrawEMALine(candle_data, kline, 20, "red")
+	if err != nil {
+		return
+	}
+	line50, err := DrawEMALine(candle_data, kline, 50, "green")
+	if err != nil {
+		return
+	}
+	line100, err := DrawEMALine(candle_data, kline, 100, "orange")
 	if err != nil {
 		panic(err)
 	}
