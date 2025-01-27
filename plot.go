@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 )
@@ -68,20 +70,23 @@ func DrawCandlestickChart(candles []Candle, ticker string, filename string) *cha
 func DrawEMALine(candle_data []Candle, kline *charts.Kline, period int, color string) *charts.Line {
 	line := charts.NewLine()
 	ema9, err := IndicatorEMA(candle_data, period)
+func DrawEMALine(candleData []Candle, kline *charts.Kline, period int) (*charts.Line, error) {
+	if len(candleData) == 0 {
+		return nil, fmt.Errorf("candleData is empty")
+	}
+	if period <= 0 {
+		return nil, fmt.Errorf("period must be positive")
+	}
+
+	emaValues, err := IndicatorEMA(candleData, period)
 	if err != nil {
-		return nil
+		return nil, fmt.Errorf("IndicatorEMA failed: %w", err)
 	}
-	items := make([]opts.LineData, 0)
-	for _, d := range ema9 {
-		if d == 0 {
-			items = append(items, opts.LineData{Value: nil})
-			continue
-		}
-		items = append(items, opts.LineData{Value: d})
-	}
-	line.AddSeries("Линия", items).
+
+	line := charts.NewLine()
+	line.AddSeries("EMA", generateLineItems(emaValues)).
 		SetSeriesOptions(charts.WithLineChartOpts(opts.LineChart{
-			Smooth:     opts.Bool(true), // Убираем точки
+			Smooth:     opts.Bool(true),
 			ShowSymbol: opts.Bool(false),
 		}),
 			charts.WithItemStyleOpts(opts.ItemStyle{
@@ -89,4 +94,19 @@ func DrawEMALine(candle_data []Candle, kline *charts.Kline, period int, color st
 			}))
 
 	return line
+		}))
+
+	return line, nil
+}
+
+func generateLineItems(emaValues []float64) []opts.LineData {
+	items := make([]opts.LineData, len(emaValues))
+	for i, value := range emaValues {
+		if value == 0 {
+			items[i] = opts.LineData{Value: nil}
+		} else {
+			items[i] = opts.LineData{Value: value}
+		}
+	}
+	return items
 }

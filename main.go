@@ -24,6 +24,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	line50 := DrawEMALine(candle_data, kline, 50, "green")
 	line100 := DrawEMALine(candle_data, kline, 100, "orange")
 
+	line, err := DrawEMALine(candle_data, kline, 9)
+	if err != nil {
+		panic(err)
+	}
 	// page := components.NewPage()
 	kline.Overlap(line9)
 	kline.Overlap(line20)
