@@ -31,7 +31,7 @@ type CandlesResponse struct {
 // Возвращает срез свеч за заданные даты, заданной акции и заданного интервала
 func GetCandlesData(start time.Time, end time.Time, symbol string, interval string) ([]Candle, error) {
 	url := "https://iss.moex.com/iss/engines/stock/markets/shares/securities/" +
-		symbol + "/candles.json?iss.meta=off&from=" + start.Format("2006-01-02") + "&to=" + end.Format("2006-01-02") + "&interval=" + interval
+		symbol + "/candles.json?iss.meta=off&from=" + start.Format("2006-01-02") + "&till=" + end.Format("2006-01-02") + "&interval=" + interval
 
 	// Создаем HTTP-запрос
 	resp, err := http.Get(url)
